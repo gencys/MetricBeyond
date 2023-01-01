@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    
+
+    "name": "Metric Beyond",
+    "description": "Convert all imperial units to metric units on the DnD Beyond website.",
+    "version": "1.1",
+
+    "icons": {
+        "48": "images/Metric_Beyond_48.png",
+        "96": "images/Metric_Beyond_96.png",
+        "128": "images/Metric_Beyond_128.png",
+        "256": "images/Metric_Beyond_256.png",
+        "512": "images/Metric_Beyond_512.png"
+    },
+
+    
+
+    "content_scripts": [{
+        "js": [ "content.js" ],
+        "matches": [ "https://www.dndbeyond.com/characters/*", "https://www.dndbeyond.com/monsters/*" ]
+    }],
+
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/toolbar_MB_16.png",
+            "19": "images/toolbar_MB_19.png",
+            "32": "images/toolbar_MB_32.png",
+            "38": "images/toolbar_MB_38.png",
+            "48": "images/toolbar_MB_48.png",
+            "72": "images/toolbar_MB_72.png"
+        }
+    },
+
+    "permissions": [ ]
+}
