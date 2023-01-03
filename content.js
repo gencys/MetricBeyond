@@ -1,5 +1,5 @@
 /*
- Copyright 2023 Jean-François Vaduret
+ Copyright 2022-2023 Jean-François Vaduret
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -116,11 +116,18 @@ function changeToKilograms() {
 }
 
 function changeInText() {
-    var divToSearch = [".ct-senses__summary", ".jsx-parser", ".ddbc-html-content", ".ct-sidebar__pane", '.ct-sidebar__pane .ddbc-creature-block span[class$="-data"]'];
+    var divToSearch = [
+        ".ct-senses__summary",
+        ".jsx-parser",
+        ".ddbc-html-content",
+        ".ct-sidebar__pane",
+        '.ct-sidebar__pane .ddbc-creature-block span[class$="-data"]',
+        ".ddbc-item-name"
+    ];
     var currDiv;
     divToSearch.forEach( (divClass) => {
         currDiv = document.querySelectorAll(divClass + " p");
-        if (divClass == divToSearch[0] || divClass == divToSearch[4]) {
+        if (divClass == divToSearch[0] || divClass == divToSearch[4] || divClass == divToSearch[5]) {
             currDiv = document.querySelectorAll(divClass);
         }
         if ( currDiv ) {
