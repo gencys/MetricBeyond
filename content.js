@@ -147,7 +147,7 @@ function changeInText() {
 
 function changeZoneToMetersInText(element) {
     var regexZone = /(\d+) by (\d+) ft./g;
-    var text = element.innerHTML;
+    var text = element.textContent;
     var matchesZone = [...text.matchAll(regexZone)];
     if (matchesZone != null && matchesZone.length != 0) {
         var firstNumber, secondNumber;
@@ -156,7 +156,7 @@ function changeZoneToMetersInText(element) {
             secondNumber = (parseFloat(match[2]) * 3)/10;
             text = text.replace(regexZone, firstNumber + " by " + secondNumber + " m.");
         });
-        element.innerHTML = text;
+        element.textContent = text;
     }
 }
 
@@ -199,7 +199,7 @@ function changeWeightToKilogramsInText(element) {
 }
 
 function parseAndChangeText(element, regex, rate) {
-    var text = element.innerHTML;
+    var text = element.textContent;
     var matches;
     regex.forEach( (regexElement, index) => {
         matches = [...text.matchAll(regexElement[0])];
@@ -207,7 +207,7 @@ function parseAndChangeText(element, regex, rate) {
             matches.forEach( (match) => {
                 text = text.replace(regexElement[1], (parseFloat(match) * rate[0])/rate[1] + regexElement[2]);
             });
-            element.innerHTML = text;
+            element.textContent = text;
         }
     });
 }
