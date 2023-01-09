@@ -7,7 +7,7 @@
 
 A simple web browser extension that automatically converts all imperial units to metric units, on the D&D Beyond website.
 
-Beyond Metric is available on [Mac](https://apps.apple.com/en/app/metric-beyond/id1662124385?l=en), [iPhone/iPad](https://apps.apple.com/fr/app/metric-beyond/id1662124385?l=en), [Chrome](https://chrome.google.com/webstore/detail/metric-beyond/cihnlndlolbobejfmejjnagmohcbklff) and [Firefox](https://addons.mozilla.org/addon/metric-beyond/).
+Beyond Metric is available on [Safari for Mac](https://apps.apple.com/en/app/metric-beyond/id1662124385?l=en), [Safari for iPhone/iPad](https://apps.apple.com/fr/app/metric-beyond/id1662124385?l=en), [Chrome](https://chrome.google.com/webstore/detail/metric-beyond/cihnlndlolbobejfmejjnagmohcbklff) and [Firefox](https://addons.mozilla.org/addon/metric-beyond/).
 
 ## About Metric Beyond
 
