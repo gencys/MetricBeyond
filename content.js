@@ -16,9 +16,9 @@
 
 function changeToMeters_One(element) {
     if (element.classList.contains("ddbc-combat-attack__range-value-long")) {
-        element.textContent = "(" + (parseFloat(element.textContent.match(/\d+/)) * 3)/10 + ")";
+        element.textContent = "(" + (parseFloat(element.textContent.match(/\d+/)) * 30)/100 + ")";
     } else {
-        element.textContent = (parseFloat(element.textContent) * 3)/10;
+        element.textContent = (parseFloat(element.textContent) * 30)/100;
     }
 }
 
@@ -66,8 +66,8 @@ function changeItemRange() {
                 var matches = [...text.matchAll(regexItem)];
                 if (matches.length != 0) {
                     matches.forEach( (match) => {
-                        firstNumber = (parseFloat(match[1])*3)/10;
-                        secondNumber = (parseFloat(match[2])*3)/10;
+                        firstNumber = (parseFloat(match[1])*30)/100;
+                        secondNumber = (parseFloat(match[2])*30)/100;
                         text = text.replace(regexItem, "(" + firstNumber + "/" + secondNumber + ")");
                     });
                     element.textContent = text;
@@ -79,7 +79,7 @@ function changeItemRange() {
 }
 
 function changeToKilograms_One(elementNumber, elementUnit) {
-    elementNumber.textContent = parseFloat(elementNumber.textContent) / 10;
+    elementNumber.textContent = (parseFloat(elementNumber.textContent) *1000)/ 10000;
     elementUnit.textContent = "kg.";
 }
 
@@ -104,8 +104,8 @@ function changeToKilograms() {
             matches = [...text.matchAll(regexWeigthContainerCapacity)];
             if (matches.length != 0) {
                 matches.forEach((match) => {
-                    firstNumber = parseFloat(match[1]) / 10;
-                    secondNumber = parseFloat(match[2]) / 10;
+                    firstNumber = (parseFloat(match[1]) *100)/ 1000;
+                    secondNumber = (parseFloat(match[2]) *100)/ 1000;
                     text = text.replace(regexWeigthContainerCapacity, "(" + firstNumber  + "/" + secondNumber + " kg)");
                 });
                 element.textContent = text;
@@ -152,8 +152,8 @@ function changeZoneToMetersInText(element) {
     if (matchesZone != null && matchesZone.length != 0) {
         var firstNumber, secondNumber;
         matchesZone.forEach( (match) => {
-            firstNumber = (parseFloat(match[1]) * 3)/10;
-            secondNumber = (parseFloat(match[2]) * 3)/10;
+            firstNumber = (parseFloat(match[1]) * 30)/100;
+            secondNumber = (parseFloat(match[2]) * 30)/100;
             text = text.replace(regexZone, firstNumber + " by " + secondNumber + " m.");
         });
         element.textContent = text;
@@ -167,7 +167,7 @@ function changeRangeToMetersInText(element) {
         [/\d+ foot/g, /\d+ foot/, " meters"],
         [/\d+-foot/g, /\d+-foot/, "-meters"]
     ];
-    parseAndChangeText(element, regexRange, [3,10]);
+    parseAndChangeText(element, regexRange, [30,100]);
 }
 
 function changeRangeToCentimetersInText(element) {
@@ -177,7 +177,7 @@ function changeRangeToCentimetersInText(element) {
         [/\d+ inch/g, /\d+ inch/, " centimeters"],
         [/\d+-inch/g, /\d+-inch/, "-centimeters"]
     ];
-    parseAndChangeText(element, regexRangeCM, [25,10]);
+    parseAndChangeText(element, regexRangeCM, [250,100]);
 }
 
 function changeCompositeToMetersInText(element) {
@@ -185,7 +185,7 @@ function changeCompositeToMetersInText(element) {
         [/\d+ cubic foot/g, /\d+ cubic foot/, " cubic meters"],
         [/\d+ cubic feet/g, /\d+ cubic feet/, " cubic meters"]
     ];
-    parseAndChangeText(element, regexComposite, [3,100]);
+    parseAndChangeText(element, regexComposite, [30,1000]);
 }
 
 function changeWeightToKilogramsInText(element) {
@@ -194,7 +194,7 @@ function changeWeightToKilogramsInText(element) {
         [/\d+ pound/g, /\d+ pound/, " kilograms"],
         [/\d+-pounds/g, /\d+-pounds/, "-kilograms"]
     ];
-    parseAndChangeText(element, regexWeight, [1,10]);
+    parseAndChangeText(element, regexWeight, [10,100]);
     
 }
 

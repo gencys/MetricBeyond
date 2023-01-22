@@ -4,7 +4,7 @@
 
     "name": "Metric Beyond",
     "description": "This extension will convert all imperial units to metric units on the DnD Beyond website.",
-    "version": "1.0",
+    "version": "1.1",
 
     "icons": {
         "48": "images/Metric_Beyond_48.png",
