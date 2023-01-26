@@ -79,7 +79,7 @@ function changeItemRange() {
 }
 
 function changeToKilograms_One(elementNumber, elementUnit) {
-    elementNumber.textContent = (parseFloat(elementNumber.textContent) *1000)/ 10000;
+    elementNumber.textContent = (parseFloat(elementNumber.textContent) *1000)/ 2000;
     elementUnit.textContent = "kg.";
 }
 
@@ -104,8 +104,8 @@ function changeToKilograms() {
             matches = [...text.matchAll(regexWeigthContainerCapacity)];
             if (matches.length != 0) {
                 matches.forEach((match) => {
-                    firstNumber = (parseFloat(match[1]) *100)/ 1000;
-                    secondNumber = (parseFloat(match[2]) *100)/ 1000;
+                    firstNumber = (parseFloat(match[1]) *1000)/ 2000;
+                    secondNumber = (parseFloat(match[2]) *1000)/ 2000;
                     text = text.replace(regexWeigthContainerCapacity, "(" + firstNumber  + "/" + secondNumber + " kg)");
                 });
                 element.textContent = text;
@@ -122,12 +122,13 @@ function changeInText() {
         ".ddbc-html-content",
         ".ct-sidebar__pane",
         '.ct-sidebar__pane .ddbc-creature-block span[class$="-data"]',
-        ".ddbc-item-name"
+        ".ddbc-item-name",
+        ".ct-preferences-pane__field-description"
     ];
     var currDiv;
     divToSearch.forEach( (divClass) => {
         currDiv = document.querySelectorAll(divClass + " p");
-        if (divClass == divToSearch[0] || divClass == divToSearch[4] || divClass == divToSearch[5]) {
+        if (divClass == divToSearch[0] || divClass == divToSearch[4] || divClass == divToSearch[5] || divClass == divToSearch[6]) {
             currDiv = document.querySelectorAll(divClass);
         }
         if ( currDiv ) {
@@ -190,11 +191,12 @@ function changeCompositeToMetersInText(element) {
 
 function changeWeightToKilogramsInText(element) {
     var regexWeight = [
+        [/\d+ lb\./g, /\d+ lb\./, " kg."],
         [/\d+ pounds/g, /\d+ pounds/, " kilograms"],
         [/\d+ pound/g, /\d+ pound/, " kilograms"],
         [/\d+-pounds/g, /\d+-pounds/, "-kilograms"]
     ];
-    parseAndChangeText(element, regexWeight, [10,100]);
+    parseAndChangeText(element, regexWeight, [1000,2000]);
     
 }
 

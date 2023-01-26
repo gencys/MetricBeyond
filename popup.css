@@ -1,19 +1,58 @@
 :root {
     color-scheme: light dark;
+    --body-color: rgb(255,255,255);
+    --spacing: 20px;
+    --text-color: rgb(36, 41, 47);
+    --border-color: rgb(216, 222, 228);
+    --link-color: rgb(9, 105, 218);
+    --header-color: rgb(246, 248, 250);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --body-color: rgb(34, 39, 46);
+    --border-color: rgb(55, 62, 71);
+    --text-color: rgb(173, 186, 199);
+    --link-color: orange;
+    --header-color: rgb(45, 51, 59);
+  }
 }
 
 body {
-    width: 300px;
-    padding: 10px;
+    width: 280px;
+    padding: 0 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     margin: auto;
 
     font-family: system-ui;
     text-align: center;
+    
+    background-color: var(--body-color);
+    color: var(--text-color);
 }
 
-@media (prefers-color-scheme: dark) {
-    /* Dark Mode styles go here. */
+#title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background-color: var(--header-color);
+  border-bottom: 1px solid var(--border-color);
+  width: 360px;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
