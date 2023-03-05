@@ -17,7 +17,7 @@ function saveOptions(e) {
     else {
       instructions.style.display = "none";
     }
-    browser.storage.sync.set({
+    browser.storage.local.set({
       state: state
     });
 }
@@ -33,7 +33,7 @@ function restoreOptions() {
     	console.log(`Error: ${error}`);
     }
   
-    let getting = browser.storage.sync.get("state");
+    let getting = browser.storage.local.get("state");
     getting.then(setCurrentChoice, onError);
 }
   

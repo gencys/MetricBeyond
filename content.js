@@ -296,5 +296,5 @@ function onError(error) {
   console.log(`Error: ${error}`);
 }
 
-const getting = browser.storage.sync.get("state");
+const getting = browser.storage.local.get("state");
 getting.then(loadPreferencesAndRun, onError);
