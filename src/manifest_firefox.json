@@ -1,10 +1,9 @@
 {
-    "manifest_version": 2,
-    
+    "manifest_version": 3,
 
     "name": "Metric Beyond",
-    "description": "This extension will convert all imperial units to metric units on the DnD Beyond website.",
-    "version": "1.7",
+    "description": "Bring the metric unit system to DnD Beyond!",
+    "version": "1.8",
 
     "icons": {
         "96": "images/Metric_Beyond_96.png",
@@ -12,8 +11,6 @@
         "256": "images/Metric_Beyond_256.png",
         "512": "images/Metric_Beyond_512.png"
     },
-
-    
 
     "content_scripts": [{
         "js": [ "content.js" ],
@@ -25,11 +22,9 @@
         ]
     }],
 
-    "browser_action": {
+    "action": {
         "default_popup": "popup.html",
         "default_icon": {
-            "16": "images/toolbar_MB_16.png",
-            "19": "images/toolbar_MB_19.png",
             "32": "images/toolbar_MB_32.png",
             "38": "images/toolbar_MB_38.png",
             "48": "images/toolbar_MB_48.png",
@@ -42,7 +37,7 @@
 
     "browser_specific_settings": {
         "gecko": {
-          "id": "{8902ef2d-31fe-4223-b4fe-81824ca77ed9}"
+            "id": "{8902ef2d-31fe-4223-b4fe-81824ca77ed9}"
         }
     }
 }
