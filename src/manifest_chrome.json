@@ -2,12 +2,10 @@
     "manifest_version": 3,
 
     "name": "Metric Beyond",
-    "description": "Bring the metric unit system to DnD Beyond!",
+    "description": "Bring the metric unit system to D&D Beyond!",
     "version": "1.8",
 
     "icons": {
-        "96": "images/Chrome_Metric_Beyond_96.png",
-        "128": "images/Chrome_Metric_Beyond_128.png",
         "256": "images/Chrome_Metric_Beyond_256.png",
         "512": "images/Chrome_Metric_Beyond_512.png"
     },
