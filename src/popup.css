@@ -1,6 +1,6 @@
 :root {
     color-scheme: light dark;
-    --body-color: rgb(255,255,255);
+    --body-color: rgb(255, 255, 255);
     --spacing: 20px;
     --text-color: rgb(36, 41, 47);
     --border-color: rgb(216, 222, 228);
@@ -9,13 +9,13 @@
 }
 
 @media screen and (prefers-color-scheme: dark) {
-  :root {
-    --body-color: rgb(34, 39, 46);
-    --border-color: rgb(55, 62, 71);
-    --text-color: rgb(173, 186, 199);
-    --link-color: orange;
-    --header-color: rgb(45, 51, 59);
-  }
+    :root {
+        --body-color: rgb(34, 39, 46);
+        --border-color: rgb(55, 62, 71);
+        --text-color: rgb(173, 186, 199);
+        --link-color: orange;
+        --header-color: rgb(45, 51, 59);
+    }
 }
 
 body {
@@ -29,26 +29,38 @@ body {
 
     font-family: system-ui;
     text-align: center;
-    
+
     background-color: var(--body-color);
     color: var(--text-color);
 }
 
 #title {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background-color: var(--header-color);
-  border-bottom: 1px solid var(--border-color);
-  width: 360px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background-color: var(--header-color);
+    border-bottom: 1px solid var(--border-color);
+    width: 360px;
 }
 
 a {
     color: var(--link-color);
     text-decoration: none;
     font-weight: bold;
+}
+
+h2 {
+    font-size: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#wrapper {
+    position: relative;
+    width: 100%;
+    font-size: 16px;
 }
 
 .nav {
@@ -61,22 +73,11 @@ a {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    font-size:12px;
+    font-size: 12px;
 }
 
-.nav > p {
+.nav>p {
     margin: 0;
-}
-
-h2 {
-    font-size: 25px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-#wrapper {
-    position: relative;
-    width:100%;
 }
 
 fieldset {
