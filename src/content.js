@@ -170,7 +170,8 @@ function parseAndChangeInText(element) {
                 [/\d+ miles/g, /\d+ miles/, " kilometers"],
                 [/\d+ mile/g, /\d+ mile/, " kilometers"],
                 [/\d+-\s*mile/g, /\d+-\s*mile/, "-kilometers"],
-                [/\d+ or more miles/g, /\d+ or more miles/, " or more kilometers"]
+                [/\d+ or more miles/g, /\d+ or more miles/, " or more kilometers"],
+                [/\d+ mph/g, /\d+ mph/, " km/h"]
             ],
             [150, 100]
         ],
@@ -191,6 +192,13 @@ function parseAndChangeInText(element) {
                 [/\d+ cubic feet/g, /\d+ cubic feet/, " cubic meters"]
             ],
             [30, 1000]
+        ],
+        [
+            parseAndChangeFraction,
+            [
+                [/[^\(]?(\d+)\/(\d+)[^\)]lb\./g, /[^\(]?\d+\/\d+[^\)]lb\./, " kg."]
+            ],
+            [1000, 2000]
         ],
         [
             parseAndChangeUnit,
@@ -238,6 +246,20 @@ function parseAndChangeUnit(element, regex, rate) {
     });
 }
 
+function parseAndChangeFraction(element, regex, rate) {
+    var text = element.textContent;
+    var matches;
+    regex.forEach( (regexElement) => {
+        matches = [...text.matchAll(regexElement[0])];
+        if (matches.length != 0) {
+            matches.forEach( (match) => {
+                text = text.replace(regexElement[1], (parseFloat(match[1]) * rate[0])/(parseFloat(match[2]) * rate[1]) + regexElement[2]);
+            });
+            element.textContent = text;
+        }
+    });
+}
+
 function changeInMonsterPage(){
     const monsterPageDivs = [
         ".mon-stat-block p",
@@ -251,7 +273,8 @@ function changeInOtherPage(){
     const otherPageDivs = [
         ".ddb-statblock-item-value",
         ".more-info-content p",
-        ".more-info-content li"
+        ".more-info-content li",
+        ".p-article-content p"
     ];
     changeInText(otherPageDivs);
 }
