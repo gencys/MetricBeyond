@@ -21,6 +21,84 @@ if (typeof chrome === 'undefined') {
     currentBrowser = chrome;
 }
 
+var fractionMap = [
+    [/(\d*)\s+\xBD/g, 0.5],
+    [/(\d*)\s+\xBC/g, 0.25],
+    [/(\d*)\s+\xBE/g, 0.75]
+];
+
+var regexDict = [
+    [
+        parseAndChangeZone,
+        [
+            [/([\.\d]+) by ([\.\d]+) ft./g, /([\.\d]+) by ([\.\d]+) ft./, [" by ", " m."]]
+        ],
+        [30, 100]
+    ],
+    [
+        parseAndChangeZone,
+        [
+            [/([\.\d]+) by ([\.\d]+) miles/g, /([\.\d]+) by ([\.\d]+) miles/, [" by ", " kilometers"]],
+            [/([\.\d]+) to ([\.\d]+) miles/g, /([\.\d]+) to ([\.\d]+) miles/, [" to ", " kilometers"]]
+        ],
+        [150, 100]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ ft\.?/g, /[\.\d]+ ft\.?/, " m."],
+            [/[\.\d]+ feet/g, /[\.\d]+ feet/, " meters"],
+            [/[\.\d]+ foot/g, /[\.\d]+ foot/, " meters"],
+            [/[\.\d]+-\s*foot/g, /[\.\d]+-\s*foot/, "-meters"]
+        ],
+        [30, 100]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ miles?/g, /[\.\d]+ miles?/, " kilometers"],
+            [/[\.\d]+-\s*mile/g, /[\.\d]+-\s*mile/, "-kilometers"],
+            [/[\.\d]+ or more miles/g, /[\.\d]+ or more miles/, " or more kilometers"],
+            [/[\.\d]+ mph/g, /[\.\d]+ mph/, " km/h"]
+        ],
+        [150, 100]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ in\.?/g, /[\.\d]+ in\.?/, " cm."],
+            [/[\.\d]+ inch(?:es)?/g, /[\.\d]+ inch(?:es)/, " centimeters"],
+            [/[\.\d]+-\s*inch/g, /[\.\d]+-\s*inch/, "-centimeters"]
+        ],
+        [250, 100]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ cubic foot/g, /[\.\d]+ cubic foot/, " cubic meters"],
+            [/[\.\d]+ cubic feet/g, /[\.\d]+ cubic feet/, " cubic meters"]
+        ],
+        [30, 1000]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ lb\.?/g, /[\.\d]+ lb\.?/, " kg."],
+            [/[\.\d]+ pounds?/g, /[\.\d]+ pounds?/, " kilograms"],
+            [/[\.\d]+-\s*pounds?/g, /[\.\d]+-\s*pounds?/, "-kilograms"]
+        ],
+        [1000, 2000]
+    ],
+    [
+        parseAndChangeUnit,
+        [
+            [/[\.\d]+ ounces?/g, ""," grams"],
+            [/[\.\d]+-ounces?/g, "","-grams"]
+        ],
+        [30, 1]
+    ]
+];
+
 function changeToMeters_One(element) {
     if (element.classList.contains("ddbc-combat-attack__range-value-long")) {
         element.textContent = "(" + (parseFloat(element.textContent.match(/\d+/)) * 30)/100 + ")";
@@ -138,79 +216,8 @@ function changeInText(divList) {
 }
 
 function parseAndChangeInText(element) {
-    var regexDict = [
-        [
-            parseAndChangeZone,
-            [
-                [/(\d+) by (\d+) ft./g, /(\d+) by (\d+) ft./, [" by ", " m."]]
-            ],
-            [30, 100]
-        ],
-        [
-            parseAndChangeZone,
-            [
-                [/(\d+) by (\d+) miles/g, /(\d+) by (\d+) miles/, [" by ", " kilometers"]],
-                [/(\d+) to (\d+) miles/g, /(\d+) to (\d+) miles/, [" to ", " kilometers"]]
-            ],
-            [150, 100]
-        ],
-        [
-            parseAndChangeUnit,
-            [
-                [/\d+ ft\.?/g, /\d+ ft\.?/, " m."],
-                [/\d+ feet/g, /\d+ feet/, " meters"],
-                [/\d+ foot/g, /\d+ foot/, " meters"],
-                [/\d+-\s*foot/g, /\d+-\s*foot/, "-meters"]
-            ],
-            [30, 100]
-        ],
-        [
-            parseAndChangeUnit,
-            [
-                [/\d+ miles/g, /\d+ miles/, " kilometers"],
-                [/\d+ mile/g, /\d+ mile/, " kilometers"],
-                [/\d+-\s*mile/g, /\d+-\s*mile/, "-kilometers"],
-                [/\d+ or more miles/g, /\d+ or more miles/, " or more kilometers"],
-                [/\d+ mph/g, /\d+ mph/, " km/h"]
-            ],
-            [150, 100]
-        ],
-        [
-            parseAndChangeUnit,
-            [
-                [/\d+ in\.?/g, /\d+ in\.?/, " cm."],
-                [/\d+ inches/g, /\d+ inches/, " centimeters"],
-                [/\d+ inch/g, /\d+ inch/, " centimeters"],
-                [/\d+-\s*inch/g, /\d+-\s*inch/, "-centimeters"]
-            ],
-            [250, 100]
-        ],
-        [
-            parseAndChangeUnit,
-            [
-                [/\d+ cubic foot/g, /\d+ cubic foot/, " cubic meters"],
-                [/\d+ cubic feet/g, /\d+ cubic feet/, " cubic meters"]
-            ],
-            [30, 1000]
-        ],
-        [
-            parseAndChangeFraction,
-            [
-                [/[^\(]?(\d+)\/(\d+)[^\)]lb\./g, /[^\(]?\d+\/\d+[^\)]lb\./, " kg."]
-            ],
-            [1000, 2000]
-        ],
-        [
-            parseAndChangeUnit,
-            [
-                [/\d+ lb\.?/g, /\d+ lb\.?/, " kg."],
-                [/\d+ pounds/g, /\d+ pounds/, " kilograms"],
-                [/\d+ pound/g, /\d+ pound/, " kilograms"],
-                [/\d+-\s*pounds/g, /\d+-\s*pounds/, "-kilograms"]
-            ],
-            [1000, 2000]
-        ]
-    ];
+    parseAndChangeFraction(element);
+    parseAndChangeFractionSymbol(element);
     regexDict.forEach( (parsePackage) => {
         parsePackage[0](element, parsePackage[1], parsePackage[2]);
     });
@@ -225,7 +232,7 @@ function parseAndChangeZone(element, regex, rate) {
             matches.forEach( (match) => {
                 firstNumber = (parseFloat(match[1]) * rate[0])/rate[1];
                 secondNumber = (parseFloat(match[2]) * rate[0])/rate[1];
-                text = text.replace(regexElement[1], firstNumber + regexElement[2][0] + secondNumber + regexElement[2][1]);
+                text = text.replace(match[0], firstNumber + regexElement[2][0] + secondNumber + regexElement[2][1]);
             });
             element.textContent = text;
         }
@@ -239,21 +246,33 @@ function parseAndChangeUnit(element, regex, rate) {
         matches = [...text.matchAll(regexElement[0])];
         if (matches.length != 0) {
             matches.forEach( (match) => {
-                text = text.replace(regexElement[1], (parseFloat(match) * rate[0])/rate[1] + regexElement[2]);
+                text = text.replace(match, (parseFloat(match) * rate[0])/rate[1] + regexElement[2]);
             });
             element.textContent = text;
         }
     });
 }
 
-function parseAndChangeFraction(element, regex, rate) {
+function parseAndChangeFraction(element) {
     var text = element.textContent;
-    var matches;
-    regex.forEach( (regexElement) => {
-        matches = [...text.matchAll(regexElement[0])];
+    var matches = [...text.matchAll(/[^\(]?(\d+)\/(\d+)([^\)]\s*(?:lb|pounds?|pints?|ft|feet|foot|cubic|square|miles?|in\.|inch(?:es)?))/g)];
+    if (matches.length != 0) {
+        matches.forEach( (match) => {
+            text = text.replace(match[0], (((parseFloat(match[1]) * 100)/parseFloat(match[2])) / 100) + match[3]);
+        });
+        element.textContent = text;
+    }
+}
+
+function parseAndChangeFractionSymbol(element) {
+    var text = element.textContent;
+    var matches, mainNumber;
+    fractionMap.forEach( (fractionSymbol) => {
+        matches = [...text.matchAll(fractionSymbol[0])];
         if (matches.length != 0) {
             matches.forEach( (match) => {
-                text = text.replace(regexElement[1], (parseFloat(match[1]) * rate[0])/(parseFloat(match[2]) * rate[1]) + regexElement[2]);
+                mainNumber = parseFloat(match[1]) + fractionSymbol[1];
+                text = text.replace(match[0], mainNumber);
             });
             element.textContent = text;
         }
@@ -274,7 +293,8 @@ function changeInOtherPage(){
         ".ddb-statblock-item-value",
         ".more-info-content p",
         ".more-info-content li",
-        ".p-article-content p"
+        ".p-article-content p",
+        ".table-compendium td"
     ];
     changeInText(otherPageDivs);
 }
