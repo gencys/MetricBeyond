@@ -21,99 +21,85 @@ if (typeof chrome === 'undefined') {
   currentBrowser = chrome;
 }
 
-var fractionMap = [
-  [/(\d*)\s+\xBD/g, 0.5],
-  [/(\d*)\s+\xBC/g, 0.25],
-  [/(\d*)\s+\xBE/g, 0.75]
+const fractionMap = [
+  [/(\d*)\s*\xBD/g, 0.5],
+  [/(\d*)\s*\xBC/g, 0.25],
+  [/(\d*)\s*\xBE/g, 0.75]
 ];
 
-var regexDict = [
+const regexDict = [
   [
-    parseAndChangeZone,
     [
-      [/((?:\d+,)*\d+(?:.\d+)?)(\s*(?:by|to|and)\s*)((?:\d+,)*\d+(?:.\d+)?) ft\.?/g, " m."],
-      [/((?:\d+,)*\d+(?:.\d+)?)(\s*(?:by|to|and)\s*)((?:\d+,)*\d+(?:.\d+)?) feet/g, " meters"],
-      [/((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\)/g, " m.)"]
+      [" ft\\.?", " m."],
+      [" feet", " meter"],
+      [" foot", " meter"],
+      ["-\\s*foot", "-meter"]
     ],
     [30, 100]
   ],
   [
-    parseAndChangeZone,
     [
-      [/((?:\d+,)*\d+(?:.\d+)?)(\s*(?:by|to|and)\s*)((?:\d+,)*\d+(?:.\d+)?) miles/g, " kilometers"]
+      [" miles?", " kilometer"],
+      ["-\\s*mile", "-kilometer"],
+      [" or more miles", " or more kilometer"],
+      [" mph", " km/h"]
     ],
     [150, 100]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? ft\.?/g, " m."],
-      [/(?:\d+,)*\d+(?:.\d+)? feet/g, " meter"],
-      [/(?:\d+,)*\d+(?:.\d+)? foot/g, " meter"],
-      [/(?:\d+,)*\d+(?:.\d+)?-\s*foot/g, "-meter"]
-    ],
-    [30, 100]
-  ],
-  [
-    parseAndChangeUnit,
-    [
-      [/(?:\d+,)*\d+(?:.\d+)? miles?/g, " kilometer"],
-      [/(?:\d+,)*\d+(?:.\d+)?-\s*mile/g, "-kilometer"],
-      [/(?:\d+,)*\d+(?:.\d+)? or more miles/g, " or more kilometer"],
-      [/(?:\d+,)*\d+(?:.\d+)? mph/g, " km/h"]
-    ],
-    [150, 100]
-  ],
-  [
-    parseAndChangeUnit,
-    [
-      [/(?:\d+,)*\d+(?:.\d+)? in\.?/g, " cm."],
-      [/(?:\d+,)*\d+(?:.\d+)? inch(?:es)?/g, " centimeter"],
-      [/(?:\d+,)*\d+(?:.\d+)?-\s*inch(?:es)?/g, "-centimeter"]
+      [" in\\.?", " cm."],
+      [" inch(?:es)?", " centimeter"],
+      ["-\\s*inch(?:es)?", "-centimeter"]
     ],
     [250, 100]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? cubic foot/g, " cubic meter"],
-      [/(?:\d+,)*\d+(?:.\d+)? cubic feet/g, " cubic meter"]
+      [" cubic foot", " cubic meter"],
+      [" cubic feet", " cubic meter"]
     ],
     [30, 1000]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? sq\. yd\./g, " square meter"]
+      [" sq\\. yd\\.", " square meter"]
     ],
     [1, 1]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? lb\.?/g, " kg."],
-      [/(?:\d+,)*\d+(?:.\d+)? pounds?/g, " kilogram"],
-      [/(?:\d+,)*\d+(?:.\d+)?-\s*pounds?/g, "-kilogram"],
-      [/(?:\d+,)*\d+(?:.\d+)? pints?/g, " liter"]
+      [" lb\\.?", " kg."],
+      [" pounds?", " kilogram"],
+      ["-\\s*pounds?", "-kilogram"],
+      [" pints?", " liter"]
     ],
     [1000, 2000]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? ounces?/g, " gram"],
-      [/(?:\d+,)*\d+(?:.\d+)?-ounces?/g, "-gram"]
+      [" ounces?", " gram"],
+      ["-ounces?", "-gram"]
     ],
     [300, 10]
   ],
   [
-    parseAndChangeUnit,
     [
-      [/(?:\d+,)*\d+(?:.\d+)? gallons?/g, " liter"],
-      [/(?:\d+,)*\d+(?:.\d+)?-gallons?/g, "-liter"]
+      [" gallons?", " liter"],
+      ["-gallons?", "-liter"]
     ],
     [700, 200]
   ]
+];
+
+const regexExceptions = [
+  [
+    parseAndChangeZone,
+    [
+      [/\(range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\)/g, " m.)", "(range "]
+    ],
+    [30, 100]
+  ],
 ];
 
 function changeToMeters_One(element) {
@@ -234,40 +220,60 @@ function changeInText(divList) {
 function parseAndChangeInText(element) {
   parseAndChangeFraction(element);
   parseAndChangeFractionSymbol(element);
+  regexExceptions.forEach((parsePackage) => {
+    parsePackage[0](element, parsePackage[1], parsePackage[2], true);
+  });
   regexDict.forEach((parsePackage) => {
-    parsePackage[0](element, parsePackage[1], parsePackage[2]);
+    parseAndChangeZone(element, parsePackage[0], parsePackage[1]);
+    parseAndChangeUnit(element, parsePackage[0], parsePackage[1]);
   });
 }
 
-function parseAndChangeZone(element, regex, rate) {
+function parseAndChangeZone(element, regex, rate, regOverride = false) {
   var text = element.textContent;
-  var matches, firstNumber, secondNumber, reg;
+  var matches, firstNumber, secondNumber, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
-    reg = new RegExp();
-    matches = [...text.matchAll(regexElement[0])];
+    if (regOverride) {
+      reg = regexElement[0];
+      prefix = regexElement[2];
+    }
+    else {
+      reg = new RegExp("((?:\\d+,)*\\d+(?:\\.\\d+)?)(\\s*(?:by|to|and)(?:\\s*over)?\\s*)((?:\\d+,)*\\d+(?:\\.\\d+)?)" + regexElement[0], "g");
+    }
+    matches = [...text.matchAll(reg)];
     if (matches.length != 0) {
       matches.forEach((match) => {
+        unit = regexElement[1];
         firstNumber = (parseFloat(match[1].replace(",", "")) * rate[0]) / rate[1];
         secondNumber = (parseFloat(match[3].replace(",", "")) * rate[0]) / rate[1];
-        text = text.replace(match[0], firstNumber + match[2] + secondNumber + regexElement[1]);
+        if (secondNumber != 1 && !(/(?:\/|\.$|\)$)/.test(unit)))
+          unit += "s";
+        text = text.replace(match[0], prefix + firstNumber + match[2] + secondNumber + unit);
       });
       element.textContent = text;
     }
   });
 }
 
-function parseAndChangeUnit(element, regex, rate) {
+function parseAndChangeUnit(element, regex, rate, regOverride = false) {
   var text = element.textContent;
-  var matches, number, unit;
+  var matches, number, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
-    matches = [...text.matchAll(regexElement[0])];
+    if (regOverride) {
+      reg = regexElement[0];
+      prefix = regexElement[2];
+    }
+    else {
+      reg = new RegExp("((?:\\d+,)*\\d+(?:\\.\\d+)?)" + regexElement[0], "g");
+    }
+    matches = [...text.matchAll(reg)];
     if (matches.length != 0) {
       matches.forEach((match) => {
         unit = regexElement[1];
         number = (parseFloat(match[0].replace(",", "")) * rate[0]) / rate[1];
-        if (number != 1 && !(/(?:\/|\.$)/.test(unit)))
+        if (number != 1 && !(/(?:\/|\.$|\)$)/.test(unit)))
           unit += "s";
-        text = text.replace(match[0], number + unit);
+        text = text.replace(match[0], prefix + number + unit);
       });
       element.textContent = text;
     }
