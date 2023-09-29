@@ -72,7 +72,8 @@ const regexDict = [
       [" lb\\.?", " kg."],
       [" pounds?", " kilogram"],
       ["-\\s*pounds?", "-kilogram"],
-      [" pints?", " liter"]
+      [" pints?", " liter"],
+      [" degrees Fahrenheit", "degrees Celsiu"]
     ],
     [1000, 2000]
   ],
@@ -321,6 +322,7 @@ function changeInOtherPage() {
     ".more-info-content p",
     ".more-info-content li",
     ".p-article-content p",
+    ".p-article-content li",
     ".table-compendium td"
   ];
   changeInText(otherPageDivs);
