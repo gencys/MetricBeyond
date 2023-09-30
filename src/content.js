@@ -327,7 +327,7 @@ function changeInOtherPage() {
     ".more-info-content li",
     ".p-article-content p",
     ".p-article-content li",
-    ".table-compendium td"
+    ".p-article-content td"
   ];
   changeInText(otherPageDivs);
 }
