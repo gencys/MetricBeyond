@@ -11,7 +11,7 @@
     },
 
     "content_scripts": [{
-        "js": [ "content.js" ],
+        "js": [ "libs/purify.min.js", "content.js" ],
         "matches": [
             "https://www.dndbeyond.com/characters/*",
             "https://www.dndbeyond.com/monsters/*",

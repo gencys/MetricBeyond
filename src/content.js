@@ -231,7 +231,7 @@ function parseAndChangeInText(element) {
 }
 
 function parseAndChangeZone(element, regex, rate, regOverride = false) {
-  var text = element.textContent;
+  var text = element.innerHTML;
   var matches, firstNumber, secondNumber, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
     if (regOverride) {
@@ -251,13 +251,14 @@ function parseAndChangeZone(element, regex, rate, regOverride = false) {
           unit += "s";
         text = text.replace(match[0], prefix + firstNumber + match[2] + secondNumber + unit);
       });
-      element.textContent = text;
+      // Sanitizing the text before adding it to the page
+      element.innerHTML = DOMPurify.sanitize(text);
     }
   });
 }
 
 function parseAndChangeUnit(element, regex, rate, regOverride = false) {
-  var text = element.textContent;
+  var text = element.innerHTML;
   var matches, number, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
     if (regOverride) {
@@ -276,24 +277,26 @@ function parseAndChangeUnit(element, regex, rate, regOverride = false) {
           unit += "s";
         text = text.replace(match[0], prefix + number + unit);
       });
-      element.textContent = text;
+      // Sanitizing the text before adding it to the page
+      element.innerHTML = DOMPurify.sanitize(text);
     }
   });
 }
 
 function parseAndChangeFraction(element) {
-  var text = element.textContent;
+  var text = element.innerHTML;
   var matches = [...text.matchAll(/(\d+)\/(\d+)([^\)]\s*(?:lb|pounds?|pints?|gallons?|ft|feet|foot|cubic|square|miles?|in\.|inch(?:es)?))/g)];
   if (matches.length != 0) {
     matches.forEach((match) => {
       text = text.replace(match[0], (((parseFloat(match[1]) * 100) / parseFloat(match[2])) / 100) + match[3]);
     });
-    element.textContent = text;
+    // Sanitizing the text before adding it to the page
+    element.innerHTML = DOMPurify.sanitize(text);
   }
 }
 
 function parseAndChangeFractionSymbol(element) {
-  var text = element.textContent;
+  var text = element.innerHTML;
   var matches, mainNumber;
   fractionMap.forEach((fractionSymbol) => {
     matches = [...text.matchAll(fractionSymbol[0])];
@@ -302,7 +305,8 @@ function parseAndChangeFractionSymbol(element) {
         mainNumber = parseFloat(match[1]) + fractionSymbol[1];
         text = text.replace(match[0], mainNumber);
       });
-      element.textContent = text;
+      // Sanitizing the text before adding it to the page
+      element.innerHTML = DOMPurify.sanitize(text);
     }
   });
 }
