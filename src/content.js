@@ -186,7 +186,7 @@ function changeToKilograms() {
 
   if (document.querySelector(".ct-equipment__container-weight-capacity")) {
     weightContainerCapacity = document.querySelectorAll(".ct-equipment__container-weight-capacity");
-    var regexWeightContainerCapacity = /\((\d+)\/(\d+) lb\.?\)/g;
+    var regexWeightContainerCapacity = /\(((?:\d+,)*\d+(?:\.\d+)?)\/((?:\d+,)*\d+(?:\.\d+)?)\s*lb\.?\)/g;
     var text, matches, firstNumber, secondNumber;
     weightContainerCapacity.forEach((element) => {
       text = element.textContent;
