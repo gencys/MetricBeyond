@@ -31,6 +31,7 @@ const regexDict = [
   [
     [
       [" ft\\.?", " m."],
+      ["-ft\\.?", "-m."],
       [" feet", " meter"],
       [" foot", " meter"],
       ["-\\s*foot", "-meter"]
@@ -97,7 +98,8 @@ const regexExceptions = [
   [
     parseAndChangeZone,
     [
-      [/\(range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\)/g, " m.)", "(range "]
+      [/\(range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\)/g, " m.)", "(range "],
+      [/range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\s+ft\./g, " m.", "range "]
     ],
     [30, 100]
   ],
@@ -219,11 +221,11 @@ function changeInText(divList) {
 }
 
 function parseAndChangeInText(element) {
-  parseAndChangeFraction(element);
-  parseAndChangeFractionSymbol(element);
   regexExceptions.forEach((parsePackage) => {
     parsePackage[0](element, parsePackage[1], parsePackage[2], true);
   });
+  parseAndChangeFraction(element);
+  parseAndChangeFractionSymbol(element);
   regexDict.forEach((parsePackage) => {
     parseAndChangeZone(element, parsePackage[0], parsePackage[1]);
     parseAndChangeUnit(element, parsePackage[0], parsePackage[1]);
@@ -320,6 +322,16 @@ function changeInMonsterPage() {
   changeInText(monsterPageDivs);
 }
 
+function changeInEncounterPage() {
+  const encounterPageDivs = [
+    ".mon-stat-block p",
+    ".mon-details__description-block p",
+    '.mon-stat-block span[class$="-data"]',
+    '.line-item__value'
+  ];
+  changeInText(encounterPageDivs);
+}
+
 function changeInOtherPage() {
   const otherPageDivs = [
     ".ddb-statblock-item-value",
@@ -341,7 +353,8 @@ function changeInCharacterPage() {
     ".ct-sidebar__pane p",
     '.ct-sidebar__pane .ddbc-creature-block span[class$="-data"]',
     ".ddbc-item-name",
-    ".ct-preferences-pane__field-description"
+    ".ct-preferences-pane__field-description",
+    ".ddbc-property-list__property-content"
   ];
   changeToMeters();
   changeToKilograms();
@@ -360,6 +373,9 @@ function observeWhenReady() {
     observer.observe(observedNode, { childList: true, subtree: true });
   } else if (url.match(/monsters\//g)) {
     changeInMonsterPage();
+  } else if (url.match(/(?:encounters|combat-tracker)\//g)) {
+    const observer = new MutationObserver(changeInEncounterPage);
+    observer.observe(observedNode, { childList: true, subtree: true });
   } else {
     changeInOtherPage();
   }
