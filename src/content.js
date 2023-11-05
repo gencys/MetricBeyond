@@ -49,9 +49,9 @@ const regexDict = [
   ],
   [
     [
-      [" in\\.?", " cm."],
       [" inch(?:es)?", " centimeter"],
-      ["-\\s*inch(?:es)?", "-centimeter"]
+      ["-\\s*inch(?:es)?", "-centimeter"],
+      [" in\\.?", " cm."]
     ],
     [250, 100]
   ],
@@ -96,16 +96,49 @@ const regexDict = [
 
 const regexExceptions = [
   [
-    parseAndChangeZone,
+    pa_zone,
     [
       [/\(range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\)/g, " m.)", "(range "],
       [/range\s*((?:\d+,)*\d+(?:.\d+)?)(\/)((?:\d+,)*\d+(?:.\d+)?)\s+ft\./g, " m.", "range "]
     ],
     [30, 100]
   ],
+  [
+    pa_exect_match,
+    [
+      [/4’8"/g, "1.45 m."],
+      [/4 feet 8 inches/g, "1.45 m."],
+      [/5 feet 8 inches/g, "1.75 m."],
+      [/3’8"/g, "1.10 m."],
+      [/4’(?!\d)/g, "1.20 m."],
+      [/4’6"/g, "1.40 m."],
+      [/4’5"/g, "1.35 m."],
+      [/2’7"/g, "0.80 m."],
+      [/5’6"/g, "1.70 m."],
+      [/2’11"/g, "0.90 m."],
+      [/4’9"/g, "1.50 m."],
+      [/4’10"/g, "1.55 m."],
+      [/\(12 × 3\)/g, "(12 × 3 / 2)"]
+    ],
+    []
+  ],
+  [
+    pa_dice_unit,
+    [
+      ["lb\\.", " / 2 kg."],
+      ["pounds", " / 2 kilograms"],
+      ["inches", " × 2.5 centimeters"],
+      ["in\\.", " × 2.5 cm."],
+      ["miles", " × 1.5 kilometers"],
+      ["ounces", " × 30 grams"],
+      ["gallons", " × 3.5 liters"],
+      [/^((?:[+×])\(?\d+d\d+)\)?$/g, " × 2.5 cm."]
+    ],
+    []
+  ]
 ];
 
-function changeToMeters_One(element) {
+function ch_to_meters_one(element) {
   if (element.classList.contains("ddbc-combat-attack__range-value-long")) {
     element.textContent = "(" + (parseFloat(element.textContent.match(/\d+/)) * 30) / 100 + ")";
   } else {
@@ -113,7 +146,7 @@ function changeToMeters_One(element) {
   }
 }
 
-function changeToMeters() {
+function ch_to_meters() {
   var distancesNumber, distancesUnit, numberOfDistances;
 
   if (document.querySelector(".ddbc-distance-number")) {
@@ -124,7 +157,7 @@ function changeToMeters() {
     for (var i = 0; i < numberOfDistances; i++) {
       if (distancesUnit[i].textContent == 'ft.') {
         if (distancesNumber[i].textContent != "--") {
-          changeToMeters_One(distancesNumber[i]);
+          ch_to_meters_one(distancesNumber[i]);
         }
         distancesUnit[i].textContent = 'm.';
       }
@@ -137,16 +170,16 @@ function changeToMeters() {
 
     for (var i = 0; i < numberOfDistances; i++) {
       if (!distancesNumber[i].classList.contains("converted")) {
-        changeToMeters_One(distancesNumber[i]);
-        changeToMeters_One(distancesUnit[i]);
+        ch_to_meters_one(distancesNumber[i]);
+        ch_to_meters_one(distancesUnit[i]);
         distancesNumber[i].classList.add("converted");
       }
     }
   }
-  changeItemRange();
+  ch_item_range();
 }
 
-function changeItemRange() {
+function ch_item_range() {
   if (document.querySelector(".ddbc-note-components__component")) {
     var regexItem = /\((\d+)\/(\d+)\)/g;
     var itemRange = document.querySelectorAll(".ddbc-note-components__component");
@@ -169,19 +202,19 @@ function changeItemRange() {
   }
 }
 
-function changeToKilograms_One(elementNumber, elementUnit) {
+function ch_to_kg_one(elementNumber, elementUnit) {
   elementNumber.textContent = (parseFloat(elementNumber.textContent) * 1000) / 2000;
   elementUnit.textContent = "kg.";
 }
 
-function changeToKilograms() {
+function ch_to_kg() {
 
   if (document.querySelector(".ddbc-weight-number")) {
     var weightNumber = document.querySelectorAll(".ddbc-weight-number__number");
     var weightUnit = document.querySelectorAll(".ddbc-weight-number__label");
     weightNumber.forEach((element, index) => {
       if (weightUnit[index].textContent == 'lb.') {
-        changeToKilograms_One(element, weightUnit[index]);
+        ch_to_kg_one(element, weightUnit[index]);
       }
     });
   }
@@ -205,7 +238,7 @@ function changeToKilograms() {
   }
 }
 
-function changeInText(divList) {
+function ch_in_text(divList) {
   var currDiv;
   for (let i = 0; i < divList.length; i++) {
     currDiv = document.querySelectorAll(divList[i]);
@@ -214,25 +247,25 @@ function changeInText(divList) {
     for (let j = 0; j < currDiv.length; j++) {
       if (currDiv[j].classList.contains("checked"))
         continue;
-      parseAndChangeInText(currDiv[j]);
+      pa_in_text(currDiv[j]);
       currDiv[j].classList.add("checked");
     }
   }
 }
 
-function parseAndChangeInText(element) {
+function pa_in_text(element) {
   regexExceptions.forEach((parsePackage) => {
     parsePackage[0](element, parsePackage[1], parsePackage[2], true);
   });
-  parseAndChangeFraction(element);
-  parseAndChangeFractionSymbol(element);
+  pa_fraction(element);
+  pa_fraction_symbol(element);
   regexDict.forEach((parsePackage) => {
-    parseAndChangeZone(element, parsePackage[0], parsePackage[1]);
-    parseAndChangeUnit(element, parsePackage[0], parsePackage[1]);
+    pa_zone(element, parsePackage[0], parsePackage[1]);
+    pa_unit(element, parsePackage[0], parsePackage[1]);
   });
 }
 
-function parseAndChangeZone(element, regex, rate, regOverride = false) {
+function pa_zone(element, regex, rate, regOverride = false) {
   var text = element.innerHTML;
   var matches, firstNumber, secondNumber, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
@@ -259,7 +292,7 @@ function parseAndChangeZone(element, regex, rate, regOverride = false) {
   });
 }
 
-function parseAndChangeUnit(element, regex, rate, regOverride = false) {
+function pa_unit(element, regex, rate, regOverride = false) {
   var text = element.innerHTML;
   var matches, number, unit, reg, prefix = "";
   regex.forEach((regexElement) => {
@@ -285,7 +318,7 @@ function parseAndChangeUnit(element, regex, rate, regOverride = false) {
   });
 }
 
-function parseAndChangeFraction(element) {
+function pa_fraction(element) {
   var text = element.innerHTML;
   var matches = [...text.matchAll(/(\d+)\/(\d+)([^\)]\s*(?:lb|pounds?|pints?|gallons?|ft|feet|foot|cubic|square|miles?|in\.|inch(?:es)?))/g)];
   if (matches.length != 0) {
@@ -297,7 +330,7 @@ function parseAndChangeFraction(element) {
   }
 }
 
-function parseAndChangeFractionSymbol(element) {
+function pa_fraction_symbol(element) {
   var text = element.innerHTML;
   var matches, mainNumber;
   fractionMap.forEach((fractionSymbol) => {
@@ -313,26 +346,64 @@ function parseAndChangeFractionSymbol(element) {
   });
 }
 
-function changeInMonsterPage() {
+function pa_exect_match(element, regex, rate) {
+  var text = element.innerHTML;
+  var matches, unit, reg;
+  regex.forEach((regexElement) => {
+    reg = regexElement[0];
+    matches = [...text.matchAll(reg)];
+    if (matches.length != 0) {
+      matches.forEach((match) => {
+        unit = regexElement[1];
+        text = text.replace(match[0], unit);
+      });
+      // Sanitizing the text before adding it to the page
+      element.innerHTML = DOMPurify.sanitize(text);
+    }
+  });
+}
+
+function pa_dice_unit(element, regex, rate) {
+  var text = element.innerHTML;
+  var matches, unit, reg;
+  regex.forEach((regexElement) => {
+    if (typeof regexElement[0] === "object")
+      reg = regexElement[0];
+    else
+      reg = new RegExp("((?:[+×])?\\(?\\d+d\\d+)\\)?\\s*" + regexElement[0], "g");
+    matches = [...text.matchAll(reg)];
+    if (matches.length != 0) {
+      matches.forEach((match) => {
+        unit = regexElement[1];
+        match[1] = match[1].replace("(", "");
+        text = text.replace(match[0], match[1] + unit);
+      });
+      // Sanitizing the text before adding it to the page
+      element.innerHTML = DOMPurify.sanitize(text);
+    }
+  });
+}
+
+function ch_in_monster() {
   const monsterPageDivs = [
     ".mon-stat-block p",
     ".mon-details__description-block p",
     '.mon-stat-block span[class$="-data"]'
   ];
-  changeInText(monsterPageDivs);
+  ch_in_text(monsterPageDivs);
 }
 
-function changeInEncounterPage() {
+function ch_in_encounter() {
   const encounterPageDivs = [
     ".mon-stat-block p",
     ".mon-details__description-block p",
     '.mon-stat-block span[class$="-data"]',
     '.line-item__value'
   ];
-  changeInText(encounterPageDivs);
+  ch_in_text(encounterPageDivs);
 }
 
-function changeInOtherPage() {
+function ch_in_other() {
   const otherPageDivs = [
     ".ddb-statblock-item-value",
     ".more-info-content p",
@@ -341,10 +412,10 @@ function changeInOtherPage() {
     ".p-article-content li",
     ".p-article-content td"
   ];
-  changeInText(otherPageDivs);
+  ch_in_text(otherPageDivs);
 }
 
-function changeInCharacterPage() {
+function ch_in_character() {
   const characterPageDivs = [
     ".ct-senses__summary",
     ".jsx-parser p",
@@ -356,12 +427,12 @@ function changeInCharacterPage() {
     ".ct-preferences-pane__field-description",
     ".ddbc-property-list__property-content"
   ];
-  changeToMeters();
-  changeToKilograms();
-  changeInText(characterPageDivs);
+  ch_to_meters();
+  ch_to_kg();
+  ch_in_text(characterPageDivs);
 }
 
-function observeWhenReady() {
+function observe_when_ready() {
   var observedNode = document.querySelector("body");
   if (!observedNode) {
     window.setTimeout(addObserverIfDesiredNodeAvailable, 500);
@@ -369,31 +440,31 @@ function observeWhenReady() {
   }
   var url = window.location.href;
   if (url.match(/characters\//g)) {
-    const observer = new MutationObserver(changeInCharacterPage);
+    const observer = new MutationObserver(ch_in_character);
     observer.observe(observedNode, { childList: true, subtree: true });
   } else if (url.match(/monsters\//g)) {
-    changeInMonsterPage();
+    ch_in_monster();
   } else if (url.match(/(?:encounters|combat-tracker)\//g)) {
-    const observer = new MutationObserver(changeInEncounterPage);
+    const observer = new MutationObserver(ch_in_encounter);
     observer.observe(observedNode, { childList: true, subtree: true });
   } else {
-    changeInOtherPage();
+    ch_in_other();
   }
 
 }
 
-function loadPreferencesAndRun(result) {
+function load_and_run(result) {
   if (result.state == "disabled") {
     console.log("Metric Beyond is disabled");
   }
   else {
-    observeWhenReady();
+    observe_when_ready();
   }
 }
 
-function onError(error) {
+function on_error(error) {
   console.log(`Error: ${error}`);
 }
 
 const getting = currentBrowser.storage.local.get("state");
-getting.then(loadPreferencesAndRun, onError);
+getting.then(load_and_run, on_error);
