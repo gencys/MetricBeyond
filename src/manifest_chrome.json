@@ -3,7 +3,7 @@
 
     "name": "Metric Beyond",
     "description": "Bring the metric unit system to D&D Beyond!",
-    "version": "1.9.0",
+    "version": "1.9.1",
 
     "icons": {
         "256": "images/Chrome_Metric_Beyond_256.png",
