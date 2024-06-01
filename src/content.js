@@ -94,6 +94,17 @@ const regexDict = [
   ]
 ];
 
+const rates = {
+  "ft.": {
+    "label": "m.",
+    "rate": [30, 100]
+  },
+  "lb.": {
+    "label": "kg.",
+    "rate": [1000, 2000]
+  }
+};
+
 const regexExceptions = [
   [
     pa_zone,
@@ -144,6 +155,20 @@ function ch_to_meters_one(element) {
   } else {
     element.textContent = (parseFloat(element.textContent) * 30) / 100;
   }
+}
+
+function ch_nmbr_with_label() {
+  numbers = document.querySelectorAll("[class^=styles_numberDisplay_");
+  if (!numbers)
+    return;
+  numbers.forEach((number) => {
+    children = number.childNodes
+    if (rates[children[1].innerText]) {
+      rate = rates[children[1].innerText];
+      children[1].innerText = rate["label"];
+      children[0].innerText = (parseFloat(children[0].innerText) * rate["rate"][0]) / rate["rate"][1];
+    }
+  });
 }
 
 function ch_to_meters() {
@@ -390,6 +415,7 @@ function ch_in_monster() {
     ".mon-details__description-block p",
     '.mon-stat-block span[class$="-data"]'
   ];
+  ch_nmbr_with_label();
   ch_in_text(monsterPageDivs);
 }
 
@@ -400,6 +426,7 @@ function ch_in_encounter() {
     '.mon-stat-block span[class$="-data"]',
     '.line-item__value'
   ];
+  ch_nmbr_with_label();
   ch_in_text(encounterPageDivs);
 }
 
@@ -412,6 +439,7 @@ function ch_in_other() {
     ".p-article-content li",
     ".p-article-content td"
   ];
+  ch_nmbr_with_label();
   ch_in_text(otherPageDivs);
 }
 
@@ -427,6 +455,7 @@ function ch_in_character() {
     ".ct-preferences-pane__field-description",
     ".ddbc-property-list__property-content"
   ];
+  ch_nmbr_with_label();
   ch_to_meters();
   ch_to_kg();
   ch_in_text(characterPageDivs);
