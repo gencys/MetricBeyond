@@ -449,6 +449,7 @@ function ch_in_character() {
     ".jsx-parser p",
     ".ddbc-html-content p",
     ".ddbc-html-content li",
+    ".ct-sidebar__inner p",
     ".ct-sidebar__pane p",
     '.ct-sidebar__pane .ddbc-creature-block span[class$="-data"]',
     ".ddbc-item-name",
